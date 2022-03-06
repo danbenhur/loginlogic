@@ -29,7 +29,7 @@ const passwordReducer = (state, action) => {
   if (action.type === "PASSWORD_BLUR") {
     return { value: state.value, isValid: state.value.trim().length > 6 };
   }
-  return { value: "", isValid: state.isValid > 6 };
+  return { value: "", isValid: false };
 };
 
 const Login = (props) => {
@@ -41,12 +41,12 @@ const Login = (props) => {
 
   const [emailState, emailDispatch] = useReducer(emailReducer, {
     value: "",
-    isValid: true,
+    isValid: null,
   });
 
   const [passwordState, passwordDispatch] = useReducer(passwordReducer, {
     value: "",
-    isValid: true,
+    isValid: null,
   });
 
   const authCtx = useContext(AuthContext);
@@ -68,7 +68,7 @@ const Login = (props) => {
   useEffect(() => {
     const identifier = setTimeout(() => {
       console.log("Checking form validity!");
-      setFormIsValid(false);
+      setFormIsValid(emailIsValid && passwordIsValid);
     }, 500);
 
     return () => {
@@ -101,6 +101,7 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
+
     if (formIsValid) {
       authCtx.onLogin(emailState.value, passwordState.value);
     } else if (!emailIsValid) {
